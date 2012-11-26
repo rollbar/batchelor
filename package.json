@@ -1,0 +1,20 @@
+{
+  "name": "batchelor",
+  "version": "0.0.0",
+  "description": "Create and process batch files for bulk inserts/updates/deletes",
+  "main": "lib/batchelor.js",
+  "scripts": {
+    "test": "echo TESTS DISABLED vows --spec test/*.js"
+  },
+  "repository": {
+    "type":"git",
+    "url":"http://github.com/ratchetio/batchelor"
+  },
+  "author": "Cory Virok",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "vows": "0.6.x"
+  }
+}
