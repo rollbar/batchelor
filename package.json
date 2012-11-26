@@ -9,13 +9,13 @@
     "test": "echo TESTS DISABLED vows --spec test/*.js"
   },
   "repository": {
-    "type":"git",
-    "url":"http://github.com/ratchetio/batchelor"
+    "type": "git",
+    "url": "http://github.com/ratchetio/batchelor"
   },
   "dependencies": {
   },
   "devDependencies": {
-    "vows": "0.6.x"
+    "vows": "~0.7.0"
   },
   "main": "lib/batchelor.js"
 }
