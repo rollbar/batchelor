@@ -13,9 +13,9 @@ var suite = vows.describe('lazyfilewritestream').addBatch({
         '.test.lazyfilewritestream';
       return this.callback(filename, new LazyFileWriteStream(filename, {flags: 'w'}));
     },
-    'verify it is writeable': function(filename, ws) {
+    'verify it is writable': function(filename, ws) {
       assert.isFalse(ws.readable);
-      assert.isTrue(ws.writeable);
+      assert.isTrue(ws.writable);
       assert.instanceOf(ws, stream);
       assert.isFunction(ws.write);
       assert.isFunction(ws.end);

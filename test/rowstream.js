@@ -10,9 +10,9 @@ var suite = vows.describe('rowstream').addBatch({
     topic: function() {
       return new RowStream('test');
     },
-    'verify it is readable/writeable': function(rs) {
+    'verify it is readable/writable': function(rs) {
       assert.isTrue(rs.readable);
-      assert.isTrue(rs.writeable);
+      assert.isTrue(rs.writable);
       assert.instanceOf(rs, stream);
       assert.isFunction(rs.write);
       assert.isFunction(rs.end);
