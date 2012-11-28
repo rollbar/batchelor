@@ -3,6 +3,8 @@ var fs = require('fs');
 var stream = require('stream');
 var vows = require('vows');
 
+var myutil = require('../lib/util');
+
 var batchelor = require('../lib/batchelor');
 var ChangeFilePermissionStream = batchelor.ChangeFilePermissionStream;
 
@@ -43,12 +45,7 @@ var suite = vows.describe('changefilepermissionstream').addBatch({
       'verify it has 444 permissions': function(err, stats) {
         assert.isNull(err);
         assert.isObject(stats);
-
-        var s = (stats.mode & parseInt ("777", 8)).toString(8);
-        while (s.length !== 3) {
-          s = "0" + s;
-        }
-        assert.equal(s, '444');
+        assert.equal(myutil.readablePermissions(stats.mode), '444');
       }
     }
   },
@@ -88,12 +85,7 @@ var suite = vows.describe('changefilepermissionstream').addBatch({
       'verify it has 644 permissions': function(err, stats) {
         assert.isNull(err);
         assert.isObject(stats);
-
-        var s = (stats.mode & parseInt ("777", 8)).toString(8);
-        while (s.length !== 3) {
-          s = "0" + s;
-        }
-        assert.equal(s, '644');
+        assert.equal(myutil.readablePermissions(stats.mode), '644');
       }
     }
   }
