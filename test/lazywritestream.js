@@ -4,14 +4,18 @@ var stream = require('stream');
 var vows = require('vows');
 
 var batchelor = require('../lib/batchelor');
-var LazyFileWriteStream = batchelor.LazyFileWriteStream;
+var lazywritestream = batchelor.lazywritestream;
 
-var suite = vows.describe('lazyfilewritestream').addBatch({
-  'create a LazyFileWriteStream': {
+var suite = vows.describe('lazywritestream').addBatch({
+  'create a lazy write stream': {
     topic: function() {
       var filename = '/tmp/' + Math.floor(new Date().getTime() / 1000) + 
         '.test.lazyfilewritestream';
-      return this.callback(filename, new LazyFileWriteStream(filename, {flags: 'w'}));
+      var wsFactory = function() {
+        return fs.createWriteStream(filename, {flags: 'w'});
+      };
+      var lazy = lazywritestream.create(wsFactory);
+      return this.callback(filename, lazy);
     },
     'verify it is writable': function(filename, ws) {
       assert.isFalse(ws.readable);

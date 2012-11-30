@@ -3,12 +3,12 @@ var stream = require('stream');
 var vows = require('vows');
 
 var batchelor = require('../lib/batchelor');
-var RowStream = batchelor.RowStream;
+var rowstream = batchelor.rowstream;
 
 var suite = vows.describe('rowstream').addBatch({
-  'create a RowStream': {
+  'create a rowstream': {
     topic: function() {
-      return new RowStream('test');
+      return rowstream.create('test');
     },
     'verify it is readable/writable': function(rs) {
       assert.isTrue(rs.readable);
@@ -59,10 +59,10 @@ var suite = vows.describe('rowstream').addBatch({
       }
     }
   },
-  'create a RowStream factory': {
+  'create a rowstream factory': {
     topic: function() {
       return function() {
-        return new RowStream('test'); 
+        return rowstream.create('test'); 
       };
     },
     'write a valid row using end(row)': {

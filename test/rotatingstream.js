@@ -4,8 +4,8 @@ var stream = require('stream');
 var vows = require('vows');
 
 var batchelor = require('../lib/batchelor');
-var RotatingStream = batchelor.RotatingStream;
-var LazyFileWriteStream = batchelor.LazyFileWriteStream;
+var rotatingstream = batchelor.rotatingstream;
+var lazywritestream = batchelor.lazywritestream;
 
 var suite = vows.describe('rotatingstream').addBatch({
   'create a RotatingStream factory': {
@@ -16,9 +16,15 @@ var suite = vows.describe('rotatingstream').addBatch({
         var filename1 = '/tmp/' + new Date().getTime() + '.test.1.rotatingstream';
         var filename2 = '/tmp/' + new Date().getTime() + '.test.2.rotatingstream';
 
-        var lazyStream1 = new LazyFileWriteStream(filename1);
-        var lazyStream2 = new LazyFileWriteStream(filename2);
-        var ctx = {stream1: lazyStream1,
+        var lazyStream1 = lazywritestream.create(function() {
+          return fs.createWriteStream(filename1);
+        });
+        var lazyStream2 = lazywritestream.create(function() {
+          return fs.createWriteStream(filename2);
+        });
+        var ctx = {filename1: filename1,
+                   filename2: filename2,
+                   stream1: lazyStream1,
                    stream2: lazyStream2,
                    rotateOnce: false,
                    numStreamFactoryCalls: 0,
@@ -42,7 +48,7 @@ var suite = vows.describe('rotatingstream').addBatch({
           }
         };
 
-        var rs = new RotatingStream(streamFactory, checkRotate, 10); 
+        var rs = rotatingstream.create(streamFactory, checkRotate, 10); 
         ctx.rotateStream = rs;
         return ctx;
       };
@@ -123,7 +129,7 @@ var suite = vows.describe('rotatingstream').addBatch({
       'read the stream1 file': {
         topic: function(ctx) {
           var callback = this.callback;
-          fs.readFile(ctx.stream1.path, function(err, data) {
+          fs.readFile(ctx.filename1, function(err, data) {
             if (err) {
               return callback(err);
             } else {
@@ -140,7 +146,7 @@ var suite = vows.describe('rotatingstream').addBatch({
             var callback = this.callback;
               ctx.rotateStream.write('HOLA EL MUNDO.');
             setTimeout(function() {
-              fs.readFile(ctx.stream2.path, function(err, data) {
+              fs.readFile(ctx.filename2, function(err, data) {
                 if (err) {
                   return callback(err);
                 } else {
@@ -157,7 +163,7 @@ var suite = vows.describe('rotatingstream').addBatch({
             topic: function(err, data, ctx) {
               var callback = this.callback;
               ctx.rotateStream.write(' BUENAS DIAS.');
-              fs.readFile(ctx.stream2.path, function(err, data) {
+              fs.readFile(ctx.filename2, function(err, data) {
                 if (err) {
                   return callback(err);
                 } else {
@@ -172,7 +178,7 @@ var suite = vows.describe('rotatingstream').addBatch({
             'read in the stream1 file': {
               topic: function(err, data, ctx) {
                 var callback = this.callback;
-                fs.readFile(ctx.stream1.path, function(err, data) {
+                fs.readFile(ctx.filename1, function(err, data) {
                   if (err) {
                     return callback(err);
                   } else {

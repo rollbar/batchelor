@@ -3,7 +3,8 @@ var fs = require('fs');
 var stream = require('stream');
 var vows = require('vows');
 
-var Batchelor = require('../lib/batchelor').Batchelor;
+var batchelor = require('../lib/batchelor');
+var myutil = require('../lib/util');
 
 var suite = vows.describe('batchelor').addBatch({
   'create a Batchelor factory': {
@@ -12,8 +13,8 @@ var suite = vows.describe('batchelor').addBatch({
       var factory = function(tableName) {
         var path = '/tmp/' + new Date().getTime() + '.' + tableName + '.test.batchelor';
         fs.mkdirSync(path);
-        var batchelor = new Batchelor(tableName, {interval: 10, path: path});
-        var ctx = {batchelor: batchelor,
+        var b = batchelor.create(tableName, {interval: 10, path: path});
+        var ctx = {batchelor: b,
                    path: path,
                    listFiles: function(cb) {
                      return fs.readdir(path, cb);
@@ -84,6 +85,19 @@ var suite = vows.describe('batchelor').addBatch({
           assert.isNumber(obj.row.num);
           assert.isTrue(obj.row.num >= 0 && obj.row.num < 100);
         }),
+      },
+      'stat the file': {
+        topic: function(err, newFiles, ctx) {
+          var callback = this.callback;
+          fs.stat(newFiles[0], function(err, stats) {
+            return callback(err, stats);
+          });
+        },
+        'verify it is a read only file': function(err, stats) {
+          assert.isNull(err);
+          assert.isTrue(stats.isFile());
+          assert.equal(myutil.readablePermissions(stats.mode), '444');
+        }
       }
     },
     'write 100 rows, wait for 15ms, write another 100, wait for 15ms and list the new files in the data path': {
