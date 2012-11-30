@@ -11,7 +11,8 @@ var suite = vows.describe('batchelor').addBatch({
     topic: function() {
       var callback = this.callback;
       var factory = function(tableName) {
-        var path = '/tmp/' + new Date().getTime() + '.' + tableName + '.test.batchelor';
+        var rand = Math.floor((Math.random() * 100) + 1);
+        var path = '/tmp/' + new Date().getTime() + '.' + tableName + '.' + rand + '.test.batchelor';
         fs.mkdirSync(path);
         var b = batchelor.create(tableName, {interval: 10, path: path});
         var ctx = {batchelor: b,
@@ -47,6 +48,7 @@ var suite = vows.describe('batchelor').addBatch({
             for (var i = 0; i < 100; ++i) {
               b.write({hello: 'world', num: i});
             }
+            b.end();
             setTimeout(function() {
               ctx.listFiles(function(err, files) {
                 if (err) {
@@ -62,6 +64,10 @@ var suite = vows.describe('batchelor').addBatch({
             }, 15);
           }
         });
+      },
+      'verify batchelor is no longer readable/writable': function(err, newFiles, ctx) {
+        assert.isFalse(ctx.batchelor.readable);
+        assert.isFalse(ctx.batchelor.writable);
       },
       'verify there is a single, new data file': verifyNewDataFiles(1, new RegExp('test\.[0-9]+\.data')),
       'read the new file': {
