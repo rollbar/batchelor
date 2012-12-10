@@ -1,7 +1,7 @@
 {
   "name": "batchelor",
   "description": "Create and process batch files for bulk inserts/updates/deletes",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Cory Virok",
   "license": "MIT",
   "private": true,
