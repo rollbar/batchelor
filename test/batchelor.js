@@ -69,7 +69,7 @@ var suite = vows.describe('batchelor').addBatch({
         assert.isFalse(ctx.batchelor.readable);
         assert.isFalse(ctx.batchelor.writable);
       },
-      'verify there is a single, new data file': verifyNewDataFiles(1, new RegExp('test\.[0-9]+\.data')),
+      'verify there is a single, new data file': verifyNewDataFiles(1, new RegExp('test\.[0-9]+\.[0-9]+\.data')),
       'read the new file': {
         topic: function(err, newFiles, ctx) {
           var callback = this.callback;
@@ -141,7 +141,7 @@ var suite = vows.describe('batchelor').addBatch({
           }
         });
       },
-      'verify there are 2 new data files': verifyNewDataFiles(2, new RegExp('test2\.[0-9]+\.data')),
+      'verify there are 2 new data files': verifyNewDataFiles(2, new RegExp('test2\.[0-9]+\.[0-9]+\.data')),
       'read the new files': {
         topic: function(err, newFiles, ctx) {
           var callback = this.callback;

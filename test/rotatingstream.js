@@ -38,13 +38,13 @@ var suite = vows.describe('rotatingstream').addBatch({
             return lazyStream1;
           }
         };
-        var checkRotate = function() {
+        var checkRotate = function(writeStream, callback) {
           ctx.numRotateCheckCalls++;
           if (ctx.rotateOnce) {
             ctx.rotateOnce = false;
-            return true;
+            return callback(true);
           } else {
-            return false;
+            return callback(false);
           }
         };
 
