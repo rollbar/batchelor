@@ -12,9 +12,14 @@ var suite = vows.describe('rotatingstream').addBatch({
     topic: function() {
       var callback = this.callback;
       
-      var factory = function() {
+      var factory = function(suffix, maxSize) {
         var filename1 = '/tmp/' + new Date().getTime() + '.test.1.rotatingstream';
         var filename2 = '/tmp/' + new Date().getTime() + '.test.2.rotatingstream';
+
+        if (suffix) {
+          filename1 += suffix;
+          filename2 += suffix;
+        }
 
         var lazyStream1 = lazywritestream.create(function() {
           return fs.createWriteStream(filename1);
@@ -48,7 +53,7 @@ var suite = vows.describe('rotatingstream').addBatch({
           }
         };
 
-        var rs = rotatingstream.create(streamFactory, checkRotate, 10); 
+        var rs = rotatingstream.create(streamFactory, checkRotate, 10, maxSize); 
         ctx.rotateStream = rs;
         return ctx;
       };
@@ -192,6 +197,62 @@ var suite = vows.describe('rotatingstream').addBatch({
               }
             }
           }
+        }
+      }
+    },
+    'create a rotate stream that will rotate after 10 KB and write 20 KB to it': {
+      topic: function(factory) {
+        var callback = this.callback;
+        var ctx = factory('.sizeLimit', 10 * 1024);
+        var rotateStream = ctx.rotateStream;
+        var buf = new Array(1024);
+        var i;
+
+        for (i = 0; i < 1023; ++i) {
+          buf[i] = Math.floor((Math.random() * 10));
+        }
+        buf[i] = '\n';
+        buf = buf.join('');
+        for (i = 0; i < 20; ++i) {
+          rotateStream.write(buf);
+        }
+        setTimeout(function() {
+          return callback(ctx);
+        }, 10);
+      },
+      'verify there are only 2 files written to': function(ctx) {
+        assert.equal(ctx.numStreamFactoryCalls, 2); 
+      },
+      'stat the first file': {
+        topic: function(ctx) {
+          var callback = this.callback;
+          fs.stat(ctx.filename1, function(err, stats) {
+            if (err) {
+              return callback(err);
+            } else {
+              return callback(null, stats);
+            }
+          });
+        },
+        'verify it is no larger than 10 KB': function(err, stats) {
+          assert.isNull(err);
+          assert.isTrue(stats.size && stats.size <= 10 * 1024);
+        }
+      },
+      'stat the second file': {
+        topic: function(ctx) {
+          var callback = this.callback;
+          fs.stat(ctx.filename2, function(err, stats) {
+            if (err) {
+              return callback(err);
+            } else {
+              return callback(null, stats);
+            }
+          });
+        },
+        'verify it is no larger than 10 KB': function(err, stats) {
+          assert.isNull(err);
+          assert.isTrue(stats.size && stats.size <= 10 * 1024);
         }
       }
     }

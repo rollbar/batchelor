@@ -10,11 +10,16 @@ var suite = vows.describe('batchelor').addBatch({
   'create a Batchelor factory': {
     topic: function() {
       var callback = this.callback;
-      var factory = function(tableName) {
+      var factory = function(tableName, opts) {
         var rand = Math.floor((Math.random() * 100) + 1);
         var path = '/tmp/' + new Date().getTime() + '.' + tableName + '.' + rand + '.test.batchelor';
         fs.mkdirSync(path);
-        var b = batchelor.create(tableName, {interval: 10, path: path});
+        
+        opts = opts || {};
+        opts.interval = 10;
+        opts.path = path;
+
+        var b = batchelor.create(tableName, opts);
         var ctx = {batchelor: b,
                    path: path,
                    listFiles: function(cb) {
