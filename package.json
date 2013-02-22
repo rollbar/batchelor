@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/ratchetio/batchelor"
+    "url": "http://github.com/rollbar/batchelor"
   },
   "dependencies": {
     "event-stream": "~3.0.8"
